@@ -1,5 +1,4 @@
 payload:
-  - '+.weui.io'
   - '+.battlecare.net'
   - '+.gameitop.com'
   - '+.gameloop.com'
@@ -85,3 +84,4 @@ payload:
   - '+.anticheatexpert.com'
   - '+.17roco.com'
   - '+.roco.qq.com'
+  - '+.weui.io'
