@@ -2,7 +2,6 @@ payload:
   - 'amp.akamaized.net'
   - 'cdn.ampproject.org'
   - '+.openjsf.org'
-  - '+.mochajs.org'
   - '+.nodejs.org'
   - '+.amp.dev'
   - '+.ampproject.com'
@@ -12,3 +11,4 @@ payload:
   - '+.jquery.com'
   - '+.jquerymobile.com'
   - '+.jqueryui.com'
+  - '+.mochajs.org'
