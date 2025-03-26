@@ -51,6 +51,7 @@ payload:
   - '+.monotypeimaging.com'
   - '+.bitstream.com'
   - '+.itcfonts.com'
+  - '+.fontexplorerx.com'
   - '+.fonts.com'
   - '+.fonts.net'
   - '+.fontbook.com'
@@ -59,4 +60,3 @@ payload:
   - '+.linotype.com'
   - '+.myfonts.com'
   - '+.myfonts.net'
-  - '+.fontexplorerx.com'

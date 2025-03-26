@@ -2,7 +2,6 @@ payload:
   - 'amp.akamaized.net'
   - 'cdn.ampproject.org'
   - '+.openjsf.org'
-  - '+.electronjs.org'
   - '+.jquery.com'
   - '+.jquerymobile.com'
   - '+.jqueryui.com'
@@ -12,3 +11,4 @@ payload:
   - '+.ampproject.com'
   - '+.ampproject.net'
   - '+.ampproject.org'
+  - '+.electronjs.org'
