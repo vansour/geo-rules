@@ -255,6 +255,7 @@ payload:
   - '+.pdf.new'
   - '+.sign.new'
   - '+.scene7.com'
+  - '+.adobestats.io'
   - '+.typekit.com'
   - '+.typekit.net'
   - '+.mageconf.com.ua'
