@@ -6,6 +6,7 @@ payload:
   - '+.yandex'
   - '+.emias.info'
   - '+.mycdn.me'
+  - '+.ozonusercontent.com'
   - '+.mvk.com'
   - '+.userapi.com'
   - '+.vk-apps.com'
