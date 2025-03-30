@@ -30,7 +30,6 @@ payload:
   - 'n'
   - 'e'
   - 't'
-  - '+.supercell.com'
   - '+.byteoversea.com'
   - '+.muscdn.com'
   - '+.musical.ly'
@@ -51,3 +50,4 @@ payload:
   - '+.ttlivecdn.com'
   - '+.ttoverseaus.net'
   - '+.ttwstatic.com'
+  - '+.supercell.com'
