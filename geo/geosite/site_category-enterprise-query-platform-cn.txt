@@ -7,5 +7,5 @@ payload:
   - '+.jindidata.com'
   - '+.tianyancha.com'
   - '+.x315.com'
-  - '+.aiqicha.baidu.com'
   - '+.hongdunwang.com.cn'
+  - '+.aiqicha.baidu.com'
