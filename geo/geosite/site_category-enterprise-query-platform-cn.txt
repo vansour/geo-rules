@@ -1,4 +1,5 @@
 payload:
+  - '+.qichamao.com'
   - '+.qixin.com'
   - '+.qyyjt.cn'
   - '+.jindidata.com'
@@ -6,6 +7,5 @@ payload:
   - '+.x315.com'
   - '+.qcc.com'
   - '+.qichacha.com'
-  - '+.qichamao.com'
   - '+.aiqicha.baidu.com'
   - '+.hongdunwang.com.cn'
