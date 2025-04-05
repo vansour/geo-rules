@@ -1,5 +1,4 @@
 payload:
-  - '+.weui.io'
   - '+.bisheng.cn'
   - '+.bishengcompiler.cn'
   - '+.devui.design'
@@ -23,3 +22,4 @@ payload:
   - '+.owsgo.com'
   - '+.teleows.com'
   - '+.saasops.tech'
+  - '+.weui.io'
