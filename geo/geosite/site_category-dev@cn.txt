@@ -1,6 +1,8 @@
 payload:
   - 'cdn.ampproject.org'
   - 'firebase-settings.crashlytics.com'
+  - '+.cdn.jetbrains.com'
+  - '+.download-cdn.jetbrains.com.cn'
   - '+.microsoftreactor.cn'
   - '+.microsoftreactor.com.cn'
   - '+.reactorms.com.cn'
@@ -8,5 +10,3 @@ payload:
   - '+.researchkit.com.cn'
   - '+.swiftui.cn'
   - '+.swiftui.com.cn'
-  - '+.cdn.jetbrains.com'
-  - '+.download-cdn.jetbrains.com.cn'
