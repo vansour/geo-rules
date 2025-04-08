@@ -1,7 +1,5 @@
 payload:
   - '+.canonical.com'
-  - '+.snapcraft.io'
-  - '+.snapstore.io'
   - '+.ubuntu.com'
   - '+.ubuntu.net'
   - '+.ubuntuforums.org'
@@ -11,3 +9,5 @@ payload:
   - '+.launchpadlibrarian.com'
   - '+.launchpadlibrarian.net'
   - '+.launchpadlibrarian.org'
+  - '+.snapcraft.io'
+  - '+.snapstore.io'
