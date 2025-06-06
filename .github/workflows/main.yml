@@ -1,0 +1,53 @@
+name: Sync Meta Rules
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天 UTC 时间 2 点执行（可调整）
+  workflow_dispatch:      # 允许手动触发
+
+jobs:
+  sync-rules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout dummy repo (required step)
+        uses: actions/checkout@v3
+
+      - name: Install unzip and git
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip git
+
+      - name: Download meta.zip
+        run: |
+          curl -L -o meta.zip https://github.com/MetaCubeX/meta-rules-dat/archive/refs/heads/meta.zip
+
+      - name: Unzip meta.zip
+        run: |
+          unzip meta.zip
+          mv meta-rules-dat-meta extracted
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "vansour"
+          git config --global user.email "vansoursheng@gmail.com"
+
+      - name: Clone target repository
+        run: |
+          git clone https://vansour:${{ secrets.GH_TOKEN }}@github.com/vansour/geo-rules.git target-repo
+
+      - name: Copy files to target repo
+        run: |
+          rm -rf target-repo/*
+          cp -r extracted/* target-repo/
+
+      - name: Commit and Push changes
+        run: |
+          cd target-repo
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-sync from meta-rules-dat"
+            git push origin main --force
+          fi
