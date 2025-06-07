@@ -1,42 +1,57 @@
-name: Sync meta-rules-dat/meta to geo-rules/main
+name: Sync meta-rules-dat/meta → geo-rules/main
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # 每 6 小时执行一次（根据需要修改）
-  workflow_dispatch: # 支持手动触发
+    - cron: '0 */6 * * *'   # 每 6 小时运行一次，你可以根据需求调整
+  workflow_dispatch:       # 支持手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout self (geo-rules repo)
+      # 1. 检出自身仓库（geo-rules）
+      - name: Checkout geo-rules repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     # 保留全部历史以便 later 重置分支
 
+      # 2. 启动 SSH Agent 并添加私钥
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Clone meta-rules-dat repo (meta branch)
+      # 3. 克隆远端 meta 仓库到 /tmp/upstream-meta
+      - name: Clone meta-rules-dat (meta branch)
         run: |
-          git clone --single-branch --branch meta git@github.com:MetaCubeX/meta-rules-dat.git upstream-meta
+          git clone --single-branch --branch meta \
+            git@github.com:MetaCubeX/meta-rules-dat.git \
+            /tmp/upstream-meta
 
-          find . -mindepth 1 -not -name 'upstream-meta' -not -name '.git' -not -name '.github' -exec rm -rf {} +
+      # 4. 清空工作区（保留 .github 目录和 .git）
+      - name: Clean working directory
+        run: |
+          find . -mindepth 1 \
+            -not -path './.github*' \
+            -not -path './.git*' \
+            -exec rm -rf {} +
 
-          rsync -av --exclude='.git' upstream-meta/ ./
+      # 5. 同步文件到工作区
+      - name: Copy files from upstream-meta
+        run: |
+          rsync -av --delete --exclude='.git' /tmp/upstream-meta/ ./
 
-
-      - name: Set git identity
+      # 6. 配置 Git 用户信息
+      - name: Set Git identity
         run: |
           git config user.name "vansour"
           git config user.email "vansoursheng@gmail.com"
 
-      - name: Commit and push changes to geo-rules main
+      # 7. 提交并强制推送到 main 分支
+      - name: Commit & Push to main
         run: |
-          git init
-          git remote add origin git@github.com:vansour/geo-rules.git
-          git checkout -b main
-          git add .
-          git commit -m "Auto sync from meta-rules-dat/meta"
+          git checkout --orphan main
+          git add --all
+          git commit -m "Auto-sync from MetaCubeX/meta-rules-dat@meta"
           git push -f origin main
