@@ -2,39 +2,41 @@ name: Sync Meta Rules
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # 每天 00:00 UTC 运行
+  workflow_dispatch:     # 支持手动触发
 
 jobs:
   sync:
-    runs-on: ubuntu-latest  # 需要 ubuntu runner 来启动容器
-    container:
-      image: debian:12  # ✅ 使用官方 Debian 12 容器镜像
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Install dependencies
-      run: |
-        apt-get update
-        apt-get install -y git unzip curl openssh-client rsync
+    - name: Checkout 空仓库
+      uses: actions/checkout@v4
 
-    - name: Download meta.zip
+    - name: 安装依赖
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git unzip curl openssh-client rsync
+
+    - name: 下载 meta.zip
       run: curl -L -o meta.zip https://github.com/MetaCubeX/meta-rules-dat/archive/refs/heads/meta.zip
 
-    - name: Unzip meta.zip
+    - name: 解压 meta.zip
       run: unzip meta.zip
 
-    - name: Set up SSH
+    - name: 设置 SSH
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Clone target repo and sync
+    - name: 克隆目标仓库并同步
       run: |
         git clone git@github.com:vansour/geo-rules.git target-repo
         UNZIP_DIR=$(find . -maxdepth 1 -type d -name "meta-rules-dat-*")
         rsync -av --delete "$UNZIP_DIR/" target-repo/
+      shell: bash
 
-    - name: Commit and push changes
+    - name: 提交并推送变更
       run: |
         cd target-repo
         git config user.name "vansour"
@@ -45,3 +47,4 @@ jobs:
           git push origin main
         else
           echo "No changes to commit"
+        fi
