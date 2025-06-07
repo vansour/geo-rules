@@ -2,19 +2,20 @@ name: Sync Meta Rules
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天 00:00 UTC 运行（可自定义）
-  workflow_dispatch:     # 允许手动触发
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   sync:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # 需要 ubuntu runner 来启动容器
+    container:
+      image: debian:12  # ✅ 使用官方 Debian 12 容器镜像
 
     steps:
-    - name: Checkout (空 repo 用于初始化 workspace)
-      uses: actions/checkout@v4
-
-    - name: Install unzip and git
-      run: sudo apt-get update && sudo apt-get install -y unzip git
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get install -y git unzip curl openssh-client rsync
 
     - name: Download meta.zip
       run: curl -L -o meta.zip https://github.com/MetaCubeX/meta-rules-dat/archive/refs/heads/meta.zip
@@ -27,11 +28,11 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Clone target repo
+    - name: Clone target repo and sync
       run: |
         git clone git@github.com:vansour/geo-rules.git target-repo
-        rsync -av --delete meta-rules-dat-meta/ target-repo/
-      shell: bash
+        UNZIP_DIR=$(find . -maxdepth 1 -type d -name "meta-rules-dat-*")
+        rsync -av --delete "$UNZIP_DIR/" target-repo/
 
     - name: Commit and push changes
       run: |
@@ -44,4 +45,3 @@ jobs:
           git push origin main
         else
           echo "No changes to commit"
-        fi
