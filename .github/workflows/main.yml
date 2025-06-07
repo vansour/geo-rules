@@ -2,7 +2,7 @@ name: Sync meta-rules-dat/meta → geo-rules/main
 
 on:
   schedule:
-    - cron: '0 */6 * * *'   # 每 6 小时运行一次，你可以根据需求调整
+    - cron: '0 */6 * * *'   # 每 6 小时执行一次
   workflow_dispatch:       # 支持手动触发
 
 jobs:
@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 检出自身仓库（geo-rules）
+      # 1. 检出自己的仓库（geo-rules），自动在 main 分支
       - name: Checkout geo-rules repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0     # 保留全部历史以便 later 重置分支
+          fetch-depth: 0     # 保留完整历史
 
       # 2. 启动 SSH Agent 并添加私钥
       - name: Set up SSH
@@ -22,14 +22,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      # 3. 克隆远端 meta 仓库到 /tmp/upstream-meta
+      # 3. 克隆上游 meta 仓库到临时目录
       - name: Clone meta-rules-dat (meta branch)
         run: |
           git clone --single-branch --branch meta \
             git@github.com:MetaCubeX/meta-rules-dat.git \
             /tmp/upstream-meta
 
-      # 4. 清空工作区（保留 .github 目录和 .git）
+      # 4. 清空当前工作区（保留 .github/ 和 .git/）
       - name: Clean working directory
         run: |
           find . -mindepth 1 \
@@ -37,7 +37,7 @@ jobs:
             -not -path './.git*' \
             -exec rm -rf {} +
 
-      # 5. 同步文件到工作区
+      # 5. 同步上游内容到当前目录
       - name: Copy files from upstream-meta
         run: |
           rsync -av --delete --exclude='.git' /tmp/upstream-meta/ ./
@@ -49,9 +49,11 @@ jobs:
           git config user.email "vansoursheng@gmail.com"
 
       # 7. 提交并强制推送到 main 分支
-      - name: Commit & Push to main
+      - name: Commit & Force-push to main
         run: |
-          git checkout --orphan main
+          # 添加所有文件（包括删除的）
           git add --all
-          git commit -m "Auto-sync from MetaCubeX/meta-rules-dat@meta"
-          git push -f origin main
+          # 允许空提交，确保每次都有 commit（可选）
+          git commit -m "Auto-sync from MetaCubeX/meta-rules-dat@meta" --allow-empty
+          # 强制推送到 main 分支
+          git push origin HEAD:main --force
