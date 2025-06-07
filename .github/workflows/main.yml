@@ -1,50 +1,41 @@
-name: Sync Meta Rules
+name: Sync meta-rules-dat/meta to geo-rules/main
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天 00:00 UTC 运行
-  workflow_dispatch:     # 支持手动触发
+    - cron: '0 */6 * * *' # 每 6 小时执行一次（根据需要修改）
+  workflow_dispatch: # 支持手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout 空仓库
-      uses: actions/checkout@v4
+      - name: Checkout self (geo-rules repo)
+        uses: actions/checkout@v4
 
-    - name: 安装依赖
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y git unzip curl openssh-client rsync
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: 下载 meta.zip
-      run: curl -L -o meta.zip https://github.com/MetaCubeX/meta-rules-dat/archive/refs/heads/meta.zip
+      - name: Clone meta-rules-dat repo (meta branch)
+        run: |
+          git clone --single-branch --branch meta git@github.com:MetaCubeX/meta-rules-dat.git upstream-meta
+          rm -rf * .github .git
+          cp -r upstream-meta/* .
+          rm -rf upstream-meta
+        shell: bash
 
-    - name: 解压 meta.zip
-      run: unzip meta.zip
+      - name: Set git identity
+        run: |
+          git config user.name "vansour"
+          git config user.email "vansoursheng@gmail.com"
 
-    - name: 设置 SSH
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: 克隆目标仓库并同步
-      run: |
-        git clone git@github.com:vansour/geo-rules.git target-repo
-        UNZIP_DIR=$(find . -maxdepth 1 -type d -name "meta-rules-dat-*")
-        rsync -av --delete "$UNZIP_DIR/" target-repo/
-      shell: bash
-
-    - name: 提交并推送变更
-      run: |
-        cd target-repo
-        git config user.name "vansour"
-        git config user.email "vansoursheng@gmail.com"
-        git add .
-        if ! git diff --cached --quiet; then
-          git commit -m "Sync from MetaCubeX/meta-rules-dat"
-          git push origin main
-        else
-          echo "No changes to commit"
-        fi
+      - name: Commit and push changes to geo-rules main
+        run: |
+          git init
+          git remote add origin git@github.com:vansour/geo-rules.git
+          git checkout -b main
+          git add .
+          git commit -m "Auto sync from meta-rules-dat/meta"
+          git push -f origin main
